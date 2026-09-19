@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora FISAMAR · Vela triangular</title>
+<style>
+:root{
+  --navy:#0B4F7C; --blue:#2F75B5; --light:#EAF3F9; --yellow:#FFF2CC;
+  --green:#E2F0D9; --orange:#ED7D31; --grey:#F3F3F3; --dark:#5F6368;
+  --red:#C00000; --white:#fff; --border:#D6E1E8;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f7f9fb;color:#1f2d3d}
+.app{max-width:1200px;margin:0 auto;padding:18px}
+.header{background:var(--navy);color:#fff;padding:22px 26px;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+.header h1{margin:0;font-size:28px}.header p{margin:6px 0 0;opacity:.9}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}
+.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer;font-size:15px}
+.btn.primary{background:var(--orange);color:#fff}.btn.secondary{background:#dfeaf2;color:var(--navy)}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 3px 14px rgba(0,0,0,.05);overflow:hidden}
+.card h2{margin:0;padding:14px 18px;background:var(--light);color:var(--navy);font-size:18px}
+.content{padding:18px}
+.diagram{display:flex;justify-content:center;align-items:center;min-height:300px}
+svg{max-width:100%;height:auto}
+.form-row{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;align-items:center;margin:10px 0}
+label{font-weight:700;color:#4d5b66}
+input,select{width:100%;padding:12px 13px;border:1px solid #d5dce1;border-radius:9px;font-size:16px;background:var(--yellow)}
+input[readonly]{background:#f5f5f5;color:#666}
+.note{background:#fff8e6;border:1px solid #f2d999;border-radius:10px;padding:11px 13px;font-size:14px;color:#604d15}
+.supports{margin-top:18px}
+.support{display:grid;grid-template-columns:64px 1fr 1fr 1fr;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #edf1f4}
+.support:last-child{border-bottom:0}
+.point{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#eaf3f9;color:var(--navy);font-weight:800}
+.result-card{margin-top:18px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.result-card h2{margin:0;padding:14px 18px;background:var(--light);color:var(--navy);font-size:18px}
+.result-table{width:100%;border-collapse:collapse}
+.result-table th,.result-table td{padding:12px;border-bottom:1px solid #edf1f4;text-align:left;vertical-align:top}
+.result-table th{font-size:13px;color:#64717b;background:#fafcfd}
+.status{font-weight:800}
+.green{color:#2e7d32}.orange{color:#b35a00}.red{color:var(--red)}
+.summary{margin-top:14px;padding:18px;border-radius:12px;background:var(--green);font-size:20px;font-weight:800;text-align:center}
+.small{font-size:12px;color:#7a858e}
+.hidden{display:none}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.support{grid-template-columns:52px 1fr}.support>div:nth-child(n+3){grid-column:2}}
+</style>
+</head>
+<body>
+<noscript>
+<div style="max-width:1200px;margin:15px auto;padding:14px 18px;background:#f4cccc;border:1px solid #c00000;border-radius:10px;font-family:Arial,sans-serif;font-weight:700;color:#800000">
+JavaScript está desactivado en este visor. Descarga el archivo y ábrelo directamente en Safari, Chrome o Edge para usar la calculadora.
+</div>
+</noscript>
+<div class="app">
+  <div class="header">
+    <h1>CALCULADORA FISAMAR · VELA TRIANGULAR</h1>
+    <p>Versión web local · rellena solo los campos amarillos</p>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn primary" id="btnCalcular" type="button">CALCULAR</button>
+    <button class="btn secondary" id="btnResetear" type="button">RESTABLECER EJEMPLO</button>
+    <span id="engineStatus" style="align-self:center;font-weight:700;color:#B35A00">ABRE ESTE ARCHIVO EN SAFARI / CHROME PARA CALCULAR</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1 · Geometría</h2>
+      <div class="content">
+        <div class="diagram">
+          <svg viewBox="0 0 600 360" aria-label="Esquema vela triangular">
+            <polygon points="110,70 500,70 310,300" fill="#cfe7f6" stroke="#2F75B5" stroke-width="4"/>
+            <circle cx="110" cy="70" r="8" fill="#ED7D31"/><circle cx="500" cy="70" r="8" fill="#ED7D31"/><circle cx="310" cy="300" r="8" fill="#ED7D31"/>
+            <text x="78" y="45" font-size="24" font-weight="700" fill="#C00000">P1</text>
+            <text x="508" y="45" font-size="24" font-weight="700" fill="#C00000">P2</text>
+            <text x="295" y="337" font-size="24" font-weight="700" fill="#C00000">P3</text>
+            <text x="260" y="50" font-size="18" fill="#666">P1-P2</text>
+            <text x="420" y="195" font-size="18" fill="#666">P2-P3</text>
+            <text x="130" y="195" font-size="18" fill="#666">P3-P1</text>
+          </svg>
+        </div>
+        <div class="note">Introduce las tres distancias reales entre puntos. El área se calcula automáticamente.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2 · Medidas y viento</h2>
+      <div class="content">
+        <div class="form-row"><label>P1-P2 (m)</label><input id="d12" type="number" step="0.01" value="7.5"></div>
+        <div class="form-row"><label>P2-P3 (m)</label><input id="d23" type="number" step="0.01" value="9"></div>
+        <div class="form-row"><label>P3-P1 (m)</label><input id="d31" type="number" step="0.01" value="8"></div>
+        <div class="form-row"><label>Escenario de viento</label>
+          <select id="wind">
+            <option value="0.85">NORMAL / URBANO</option>
+            <option value="1.05">EXPUESTO</option>
+            <option value="1.25">MUY EXPUESTO</option>
+            <option value="1.50">TÉCNICO</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Área automática (m²)</label><input id="area" readonly></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card supports">
+    <h2>3 · Apoyos</h2>
+    <div class="content">
+      <div class="support">
+        <div class="point">P1</div>
+        <div><select id="type1"><option>POSTE</option><option>PEANA</option><option>PARED</option></select></div>
+        <div><input id="h1" type="number" step="0.1" value="5.0" placeholder="Altura vista (m)"></div>
+        <div><select id="wall1" class="hidden"><option>-</option><option>HORMIGÓN ARMADO</option><option>LADRILLO / BLOQUE</option><option>DESCONOCIDO</option></select></div>
+      </div>
+      <div class="support">
+        <div class="point">P2</div>
+        <div><select id="type2"><option>POSTE</option><option>PEANA</option><option>PARED</option></select></div>
+        <div><input id="h2" type="number" step="0.1" value="4.5" placeholder="Altura vista (m)"></div>
+        <div><select id="wall2" class="hidden"><option>-</option><option>HORMIGÓN ARMADO</option><option>LADRILLO / BLOQUE</option><option>DESCONOCIDO</option></select></div>
+      </div>
+      <div class="support">
+        <div class="point">P3</div>
+        <div><select id="type3"><option>POSTE</option><option>PEANA</option><option>PARED</option></select></div>
+        <div><input id="h3" type="number" step="0.1" value="4.0" placeholder="Altura vista (m)"></div>
+        <div><select id="wall3" class="hidden"><option>-</option><option>HORMIGÓN ARMADO</option><option>LADRILLO / BLOQUE</option><option>DESCONOCIDO</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <h2>4 · Resultado</h2>
+    <div class="content">
+      <table class="result-table">
+        <thead><tr><th>Punto</th><th>Solución</th><th>Detalle</th><th>Alt. máx.</th><th>Estado</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="summary" class="summary">Pulsa CALCULAR</div>
+      <div class="small" style="margin-top:10px">Predimensionado orientativo. Si aparece ROJO, no continuar sin revisión técnica.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const perfiles=[
+ {name:"Ø200x6",cap:31.57},{name:"Ø200x8",cap:40.22},{name:"Ø219,1x8",cap:48.08},
+ {name:"Ø244,5x8",cap:60.12},{name:"Ø273x6",cap:57.32},{name:"Ø273x8",cap:74.83},
+ {name:"Ø323,9x8",cap:112.19}
+];
+
+function toggleWall(i){
+ const t=document.getElementById("type"+i).value;
+ const w=document.getElementById("wall"+i);
+ w.classList.toggle("hidden",t!=="PARED");
+}
+function heron(a,b,c){
+ const s=(a+b+c)/2;
+ if(a<=0||b<=0||c<=0||a+b<=c||a+c<=b||b+c<=a) return 0;
+ return Math.sqrt(s*(s-a)*(s-b)*(s-c));
+}
+function selectPost(moment){
+ const sorted=[...perfiles].sort((a,b)=>a.cap-b.cap);
+ return sorted.find(p=>moment<=p.cap) || {name:"TÉCNICO",cap:0};
+}
+function footing(moment,h){
+ const b=moment<=30?0.8:moment<=50?1.0:moment<=70?1.2:1.5;
+ const d=h<=3?1.2:h<=4?1.4:h<=4.5?1.6:h<=5?1.7:h<=5.5?1.8:h<=6?2.0:2.1;
+ return {b,d};
+}
+function peanaHeight(fz,fx,m){
+ const req=Math.max(0.50,1.50*fz/41.2,1.50*fx/(0.50*41.2),1.50*m/(41.2*0.75));
+ if(req>1.50) return null;
+ return Math.ceil(req*10)/10;
+}
+function wallPlate(res,mat){
+ if(mat!=="HORMIGÓN ARMADO") return {sol:"TÉCNICO",det:"Comprobar soporte / cálculo"};
+ if(res<=5) return {sol:"PLACA 250x250x10",det:"4 taladros · M16"};
+ if(res<=10) return {sol:"PLACA 300x300x12",det:"4 taladros · M20"};
+ if(res<=15) return {sol:"PLACA 350x350x15",det:"6 taladros · M20"};
+ if(res<=20) return {sol:"PLACA 400x400x20",det:"8 taladros · M20"};
+ return {sol:"TÉCNICO",det:"Carga superior al rango automático"};
+}
+function calcular(){
+ const a=parseFloat(document.getElementById("d12").value), b=parseFloat(document.getElementById("d23").value), c=parseFloat(document.getElementById("d31").value);
+ const A=heron(a,b,c);
+ document.getElementById("area").value=A?A.toFixed(1):"ERROR";
+ if(!A){const s=document.getElementById("summary"); s.textContent="ROJO · REVISA LAS MEDIDAS"; s.style.background="#f4cccc"; return;}
+ const qd=parseFloat(document.getElementById("wind").value), At=A/3;
+ const rows=[]; let global="VERDE";
+ for(let i=1;i<=3;i++){
+   const type=document.getElementById("type"+i).value;
+   const h=parseFloat(document.getElementById("h"+i).value)||0;
+   const fz=At*qd;
+   const fx=At*qd*0.5+1.5;
+   const m=fx*h;
+   let sol="",det="",amax="",estado="VERDE";
+   if(type==="POSTE"){
+     const p=selectPost(m);
+     sol=p.name;
+     const f=footing(m,h);
+     det=`Dado ${f.b.toFixed(1)}x${f.b.toFixed(1)}x${f.d.toFixed(1)} m · poste dentro 1,00 m`;
+     amax=p.cap? (p.cap/fx).toFixed(1)+" m":"—";
+     if(p.name==="TÉCNICO") estado="ROJO";
+     else if(h>parseFloat(amax)) estado="NARANJA";
+   } else if(type==="PEANA"){
+     const ph=peanaHeight(fz,fx,m);
+     if(ph===null){sol="TÉCNICO";det="Ø1500 necesitaría >1,50 m de altura";estado="ROJO";amax="—";}
+     else{
+       sol=`PEANA Ø1500 x ${Math.round(ph*1000)} mm`;
+       det=`h=${ph.toFixed(2)} m · peso aprox. ${Math.round(4200*ph)} kg`;
+       amax=(40.22/fx).toFixed(1)+" m";
+       if(h>parseFloat(amax)) estado="NARANJA";
+     }
+   } else {
+     const res=Math.sqrt(fz*fz+fx*fx);
+     const wp=wallPlate(res,document.getElementById("wall"+i).value);
+     sol=wp.sol;det=wp.det;amax="—";
+     if(sol==="TÉCNICO")estado="ROJO";
+   }
+   if(estado==="ROJO")global="ROJO"; else if(estado==="NARANJA"&&global!=="ROJO")global="NARANJA";
+   rows.push({i,sol,det,amax,estado});
+ }
+ document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>
+   <td><b>P${r.i}</b></td><td><b>${r.sol}</b></td><td>${r.det}</td>
+   <td>${r.amax}</td><td class="status ${r.estado.toLowerCase()}">${r.estado}</td></tr>`).join("");
+ const summary=document.getElementById("summary");
+ if(global==="VERDE"){summary.textContent="VERDE · PREDIMENSIONADO OK";summary.style.background="#e2f0d9";}
+ if(global==="NARANJA"){summary.textContent="NARANJA · HAY QUE AJUSTAR";summary.style.background="#fce4d6";}
+ if(global==="ROJO"){summary.textContent="ROJO · CONSULTAR TÉCNICO";summary.style.background="#f4cccc";}
+}
+function resetear(){
+ document.getElementById("d12").value=7.5;document.getElementById("d23").value=9;document.getElementById("d31").value=8;document.getElementById("wind").value="0.85";
+ [1,2,3].forEach((i,idx)=>{document.getElementById("type"+i).value="POSTE";document.getElementById("h"+i).value=[5,4.5,4][idx];document.getElementById("wall"+i).value="-";toggleWall(i);});
+ calcular();
+}
+document.addEventListener("DOMContentLoaded", function(){
+  document.getElementById("btnCalcular").addEventListener("click", calcular);
+  document.getElementById("btnResetear").addEventListener("click", resetear);
+  [1,2,3].forEach(function(i){
+    document.getElementById("type"+i).addEventListener("change", function(){ toggleWall(i); calcular(); });
+    document.getElementById("h"+i).addEventListener("input", calcular);
+    document.getElementById("wall"+i).addEventListener("change", calcular);
+  });
+  ["d12","d23","d31"].forEach(function(id){ document.getElementById(id).addEventListener("input", calcular); });
+  document.getElementById("wind").addEventListener("change", calcular);
+  const st=document.getElementById("engineStatus");
+  st.textContent="✓ Motor de cálculo activo";
+  st.style.color="#2e7d32";
+  calcular();
+});
+</script>
+</body>
+</html>
